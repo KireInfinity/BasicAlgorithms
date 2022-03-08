@@ -5,7 +5,9 @@ decision trees and random forests
 
 from matplotlib import pyplot as plt
 import numpy as np
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
+import seaborn as sns
 
 class CreateForest:
 
@@ -16,6 +18,7 @@ class CreateForest:
         self.features = features
         self.target = target
         self.k_fold = k_fold
+        self.best_model = ["Best Model", 0]
 
     def check_models(self) -> None:
         for rf_model in self.forest:
@@ -34,17 +37,19 @@ class CreateForest:
                 clf = rf_model.fit(X_train, y_train)
                 score = clf.score(X_test, y_test)
                 score_sum += score
-                self.importance.append(rf_model.feature_importances_)
+            final_score = score_sum/float(self.k_fold)
             print("Model: " + str(rf_model))
-            print("Average CV Score " + str(score_sum/float(self.k_fold)))
+            print("Average CV Score " + str(final_score))
             print("-------------------------------------")
+            result = [str(rf_model), final_score]
+            final_model = self.get_best_model(result)
+        return final_model
 
-    def plot_importance(self, importances: list) -> None:
-        for importance in importances:
-            plt.bar(importance)
-            plt.xlabel("Importance")
-            plt.ylabel("Features")
-            plt.show()
+    def get_best_model(self, current_model) -> list:
+        if (current_model[1] > self.best_model[1]):
+            self.best_model[1] = current_model[1]
+            self.best_model[0] = current_model[0]
+        return self.best_model
 
     def random_forst_scores(self, model) -> float:
         clf = model.fit(self.X_train, self.y_train)

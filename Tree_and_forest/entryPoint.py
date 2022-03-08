@@ -24,8 +24,7 @@ def entry_point() -> None:
     ]
 
     forests = CreateForest(random_forest_models, features, target, 20)
-    forests.check_models()
-    print(forests.importance)
-    forests.plot_importance(forests.importance)
+    final_model = forests.check_models()
+    print(final_model)
 
 entry_point()
